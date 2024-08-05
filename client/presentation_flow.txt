@@ -1,0 +1,91 @@
+#1. Auth request returned (status=200):
+{'client_id': 'Verifier',
+ 'presentation_id': 'trpqIiR07rVCayBMwsRYHpgxVjhzxurHI0Wftz-jSYgw-REemHFXqdJbRwxhq6c7n860jHjm03Nwqqn5Q_W_5g',
+ 'request_uri': 'http://localhost:8080/wallet/request.jwt/is5yddBZBu1Q-X_f-m2YQz2MsbeVGAXerh5Oh_ax6f2Rtg62b8xEIQ2FNRn7of182qo8OaX-QSyxiLQWR6GA8Q'}
+presentation_id: trpqIiR07rVCayBMwsRYHpgxVjhzxurHI0Wftz-jSYgw-REemHFXqdJbRwxhq6c7n860jHjm03Nwqqn5Q_W_5g
+transaction_id: is5yddBZBu1Q-X_f-m2YQz2MsbeVGAXerh5Oh_ax6f2Rtg62b8xEIQ2FNRn7of182qo8OaX-QSyxiLQWR6GA8Q
+
+#2. Get auth request returned (status=200).
+  Authorization request payload as a signed JWT:
+eyJraWQiOiI0ZDg5YzdjMy04ZWQxLTRiNWQtYmE2MC0wMzkzZDVkZjY5NjAiLCJ0eXAiOiJvYXV0aC1hdXRoei1yZXErand0IiwiYWxnIjoiUlMyNTYifQ.eyJyZXNwb25zZV91cmkiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvd2FsbGV0L2RpcmVjdF9wb3N0IiwiY2xpZW50X2lkX3NjaGVtZSI6InByZS1yZWdpc3RlcmVkIiwicmVzcG9uc2VfdHlwZSI6InZwX3Rva2VuIiwibm9uY2UiOiJub25jZSIsImNsaWVudF9pZCI6IlZlcmlmaWVyIiwicmVzcG9uc2VfbW9kZSI6ImRpcmVjdF9wb3N0IiwiYXVkIjoiaHR0cHM6Ly9zZWxmLWlzc3VlZC5tZS92MiIsInNjb3BlIjoiIiwicHJlc2VudGF0aW9uX2RlZmluaXRpb24iOnsiaWQiOiIzMmY1NDE2My03MTY2LTQ4ZjEtOTNkOC1mZjIxN2JkYjA2NTMiLCJpbnB1dF9kZXNjcmlwdG9ycyI6W3siaWQiOiJldS5ldXJvcGEuZWMuZXVkaXcucGlkLjEiLCJuYW1lIjoiRVVESSBQSUQiLCJwdXJwb3NlIjoiV2UgbmVlZCB0byB2ZXJpZnkgeW91ciBpZGVudGl0eSIsImZvcm1hdCI6eyJtc29fbWRvYyI6eyJhbGciOlsiRVMyNTYiLCJFUzM4NCIsIkVTNTEyIiwiRWREU0EiXX19LCJjb25zdHJhaW50cyI6eyJmaWVsZHMiOlt7InBhdGgiOlsiJFtcImV1LmV1cm9wYS5lYy5ldWRpdy5waWQuMVwiXVtcImZhbWlseV9uYW1lXCJdIl0sImludGVudF90b19yZXRhaW4iOmZhbHNlfV19fV19LCJzdGF0ZSI6ImlzNXlkZEJaQnUxUS1YX2YtbTJZUXoyTXNiZVZHQVhlcmg1T2hfYXg2ZjJSdGc2MmI4eEVJUTJGTlJuN29mMTgycW84T2FYLVFTeXhpTFFXUjZHQThRIiwiaWF0IjoxNzIyODUzODA1LCJjbGllbnRfbWV0YWRhdGEiOnsiaWRfdG9rZW5fZW5jcnlwdGVkX3Jlc3BvbnNlX2FsZyI6IlJTQS1PQUVQLTI1NiIsImlkX3Rva2VuX2VuY3J5cHRlZF9yZXNwb25zZV9lbmMiOiJBMTI4Q0JDLUhTMjU2Iiwic3ViamVjdF9zeW50YXhfdHlwZXNfc3VwcG9ydGVkIjpbInVybjppZXRmOnBhcmFtczpvYXV0aDpqd2stdGh1bWJwcmludCJdLCJpZF90b2tlbl9zaWduZWRfcmVzcG9uc2VfYWxnIjoiUlMyNTYifX0.Ps45gFNe4RvUWToCoYYMr7t1FzHkAbClQMy2MBhlsR-Dg7wXJGK0PUf4jXrbg-5yrARQjO7JqSNkxK1VqlhZN9QKxfokr-qaytVUjLyRVyZY9qoK2q3ts15zP0ORW-ZzyGmftKjNVxTR6Bm4a4fsgZ5uo5Hwa-g3rF9-MM3jUwwn1Aes7FTSWY0Aldi_cDspQ4K-NvBPmBr-OpVquYj8HtKpwGGAH-OkvHv0NEPEbjZpusy8nsN__EEkSID370B2Y-YTVdpxfZrQ26LmaLm03DdMu8RnmbXocv9Hf3C-5raFow20ruT9JPsYLprLzD8QqOFOpjJ6lTFPzeUpIx6LIpL7e_taYHmCdXcTm0u_62HMr3VmU0y3udawRcz_Pmtl7gsJwgPyaMWNlsdVMR96EJdArvCNukEZ3SJFOuv2yln43oZAH5wL-W2XQTLbCzM3M5BlsnwnnwoEwwjksjWueDNYAHYgTdvV2FlrPUJMkz03XwyEp2VZZS5MBTr1GS61DbhWtqDlFEMkhpstDNMK1Wepa2Zi1hvdZ4sClkjd8FrQGJc90vbaovBc9yT3v65dn258UuNb_uzloM1Jeo0csTKSM3-oyLi-TDfhSuk_71KfGtbI_hoc0EZtRXiFbAQDoyJ_yn89pv13otnDgSYFctrKPmK3hnaD6pzj-cmqKLc
+
+#3. Get presentation definition returned (status=200).
+  Presentation definition of the authorization request as JSON:
+{'id': '32f54163-7166-48f1-93d8-ff217bdb0653',
+ 'input_descriptors': [{'constraints': {'fields': [{'intent_to_retain': False,
+                                                    'path': ['$["eu.europa.ec.eudiw.pid.1"]["family_name"]']}]},
+                        'format': {'mso_mdoc': {'alg': ['ES256', 'ES384',
+                                                        'ES512', 'EdDSA']}},
+                        'id': 'eu.europa.ec.eudiw.pid.1',
+                        'name': 'EUDI PID',
+                        'purpose': 'We need to verify your identity'}]}
+
+#4. Send the following wallet response.
+{'definition_id': '32f54163-7166-48f1-93d8-ff217bdb0653',
+ 'descriptor_map': [{'format': 'jwt_vc',
+                     'id': 'employment_input',
+                     'path': '$.verifiableCredential[0]'}],
+ 'id': 'a30e3b91-fb77-4d22-95fa-871689c322e2'}
+Send wallet response returned (status=200):
+{'redirect_uri': 'https://10.240.174.10/get-wallet-code?response_code=0b8d0a22-2cc1-4309-8638-dd8befd8c492'}
+response_code: 0b8d0a22-2cc1-4309-8638-dd8befd8c492
+
+#5. Get wallet response returned (status=200).
+{'presentation_submission': {'definition_id': '32f54163-7166-48f1-93d8-ff217bdb0653',
+                             'descriptor_map': [{'format': 'jwt_vc',
+                                                 'id': 'employment_input',
+                                                 'path': '$.verifiableCredential[0]'}],
+                             'id': 'a30e3b91-fb77-4d22-95fa-871689c322e2'},
+ 'vp_token': '{"id": "123456"}'}
+
+#6. Get presentation event log returned (status=200).
+{'events': [{'actor': 'Verifier',
+             'event': 'Transaction initialized',
+             'response': {'client_id': 'Verifier',
+                          'presentation_id': 'trpqIiR07rVCayBMwsRYHpgxVjhzxurHI0Wftz-jSYgw-REemHFXqdJbRwxhq6c7n860jHjm03Nwqqn5Q_W_5g',
+                          'request_uri': 'http://localhost:8080/wallet/request.jwt/is5yddBZBu1Q-X_f-m2YQz2MsbeVGAXerh5Oh_ax6f2Rtg62b8xEIQ2FNRn7of182qo8OaX-QSyxiLQWR6GA8Q'},
+             'timestamp': 1722853805288},
+            {'actor': 'Wallet',
+             'event': 'Request object retrieved',
+             'jwt': 'eyJraWQiOiI0ZDg5YzdjMy04ZWQxLTRiNWQtYmE2MC0wMzkzZDVkZjY5NjAiLCJ0eXAiOiJvYXV0aC1hdXRoei1yZXErand0IiwiYWxnIjoiUlMyNTYifQ.eyJyZXNwb25zZV91cmkiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvd2FsbGV0L2RpcmVjdF9wb3N0IiwiY2xpZW50X2lkX3NjaGVtZSI6InByZS1yZWdpc3RlcmVkIiwicmVzcG9uc2VfdHlwZSI6InZwX3Rva2VuIiwibm9uY2UiOiJub25jZSIsImNsaWVudF9pZCI6IlZlcmlmaWVyIiwicmVzcG9uc2VfbW9kZSI6ImRpcmVjdF9wb3N0IiwiYXVkIjoiaHR0cHM6Ly9zZWxmLWlzc3VlZC5tZS92MiIsInNjb3BlIjoiIiwicHJlc2VudGF0aW9uX2RlZmluaXRpb24iOnsiaWQiOiIzMmY1NDE2My03MTY2LTQ4ZjEtOTNkOC1mZjIxN2JkYjA2NTMiLCJpbnB1dF9kZXNjcmlwdG9ycyI6W3siaWQiOiJldS5ldXJvcGEuZWMuZXVkaXcucGlkLjEiLCJuYW1lIjoiRVVESSBQSUQiLCJwdXJwb3NlIjoiV2UgbmVlZCB0byB2ZXJpZnkgeW91ciBpZGVudGl0eSIsImZvcm1hdCI6eyJtc29fbWRvYyI6eyJhbGciOlsiRVMyNTYiLCJFUzM4NCIsIkVTNTEyIiwiRWREU0EiXX19LCJjb25zdHJhaW50cyI6eyJmaWVsZHMiOlt7InBhdGgiOlsiJFtcImV1LmV1cm9wYS5lYy5ldWRpdy5waWQuMVwiXVtcImZhbWlseV9uYW1lXCJdIl0sImludGVudF90b19yZXRhaW4iOmZhbHNlfV19fV19LCJzdGF0ZSI6ImlzNXlkZEJaQnUxUS1YX2YtbTJZUXoyTXNiZVZHQVhlcmg1T2hfYXg2ZjJSdGc2MmI4eEVJUTJGTlJuN29mMTgycW84T2FYLVFTeXhpTFFXUjZHQThRIiwiaWF0IjoxNzIyODUzODA1LCJjbGllbnRfbWV0YWRhdGEiOnsiaWRfdG9rZW5fZW5jcnlwdGVkX3Jlc3BvbnNlX2FsZyI6IlJTQS1PQUVQLTI1NiIsImlkX3Rva2VuX2VuY3J5cHRlZF9yZXNwb25zZV9lbmMiOiJBMTI4Q0JDLUhTMjU2Iiwic3ViamVjdF9zeW50YXhfdHlwZXNfc3VwcG9ydGVkIjpbInVybjppZXRmOnBhcmFtczpvYXV0aDpqd2stdGh1bWJwcmludCJdLCJpZF90b2tlbl9zaWduZWRfcmVzcG9uc2VfYWxnIjoiUlMyNTYifX0.Ps45gFNe4RvUWToCoYYMr7t1FzHkAbClQMy2MBhlsR-Dg7wXJGK0PUf4jXrbg-5yrARQjO7JqSNkxK1VqlhZN9QKxfokr-qaytVUjLyRVyZY9qoK2q3ts15zP0ORW-ZzyGmftKjNVxTR6Bm4a4fsgZ5uo5Hwa-g3rF9-MM3jUwwn1Aes7FTSWY0Aldi_cDspQ4K-NvBPmBr-OpVquYj8HtKpwGGAH-OkvHv0NEPEbjZpusy8nsN__EEkSID370B2Y-YTVdpxfZrQ26LmaLm03DdMu8RnmbXocv9Hf3C-5raFow20ruT9JPsYLprLzD8QqOFOpjJ6lTFPzeUpIx6LIpL7e_taYHmCdXcTm0u_62HMr3VmU0y3udawRcz_Pmtl7gsJwgPyaMWNlsdVMR96EJdArvCNukEZ3SJFOuv2yln43oZAH5wL-W2XQTLbCzM3M5BlsnwnnwoEwwjksjWueDNYAHYgTdvV2FlrPUJMkz03XwyEp2VZZS5MBTr1GS61DbhWtqDlFEMkhpstDNMK1Wepa2Zi1hvdZ4sClkjd8FrQGJc90vbaovBc9yT3v65dn258UuNb_uzloM1Jeo0csTKSM3-oyLi-TDfhSuk_71KfGtbI_hoc0EZtRXiFbAQDoyJ_yn89pv13otnDgSYFctrKPmK3hnaD6pzj-cmqKLc',
+             'timestamp': 1722853805381},
+            {'actor': 'Wallet',
+             'event': 'Presentation definition retrieved',
+             'presentation_definition': {'id': '32f54163-7166-48f1-93d8-ff217bdb0653',
+                                         'input_descriptors': [{'constraints': {'fields': [{'intent_to_retain': False,
+                                                                                            'path': ['$["eu.europa.ec.eudiw.pid.1"]["family_name"]']}]},
+                                                                'format': {'mso_mdoc': {'alg': ['ES256',
+                                                                                                'ES384',
+                                                                                                'ES512',
+                                                                                                'EdDSA']}},
+                                                                'id': 'eu.europa.ec.eudiw.pid.1',
+                                                                'name': 'EUDI '
+                                                                        'PID',
+                                                                'purpose': 'We '
+                                                                           'need '
+                                                                           'to '
+                                                                           'verify '
+                                                                           'your '
+                                                                           'identity'}]},
+             'timestamp': 1722853805402},
+            {'actor': 'Wallet',
+             'event': 'Wallet response posted',
+             'timestamp': 1722853805409,
+             'wallet_response': {'presentation_submission': {'definition_id': '32f54163-7166-48f1-93d8-ff217bdb0653',
+                                                             'descriptor_map': [{'format': 'jwt_vc',
+                                                                                 'id': 'employment_input',
+                                                                                 'path': '$.verifiableCredential[0]'}],
+                                                             'id': 'a30e3b91-fb77-4d22-95fa-871689c322e2'},
+                                 'vp_token': '{"id": "123456"}'}},
+            {'actor': 'Verifier',
+             'event': 'Verifier got wallet response',
+             'timestamp': 1722853805422,
+             'wallet_response': {'presentation_submission': {'definition_id': '32f54163-7166-48f1-93d8-ff217bdb0653',
+                                                             'descriptor_map': [{'format': 'jwt_vc',
+                                                                                 'id': 'employment_input',
+                                                                                 'path': '$.verifiableCredential[0]'}],
+                                                             'id': 'a30e3b91-fb77-4d22-95fa-871689c322e2'},
+                                 'vp_token': '{"id": "123456"}'}}],
+ 'last_updated': 1722853805422,
+ 'transaction_id': 'trpqIiR07rVCayBMwsRYHpgxVjhzxurHI0Wftz-jSYgw-REemHFXqdJbRwxhq6c7n860jHjm03Nwqqn5Q_W_5g'}
+

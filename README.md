@@ -288,24 +288,24 @@ You can also try it out in [Swagger UI](http://localhost:8080/swagger-ui#/verifi
 - _Method_: GET
 - _URL_: http://localhost:8080/wallet/request.jwt/{transactionId}
 - _Parameters_
-  - `transactionId`: The initialized transaction's identifier
+  - `transactionId`: The initialized transaction's identifier that is found in `request_uri`.
 - _Actor_: [Wallet](src/main/kotlin/eu/europa/ec/eudi/verifier/endpoint/adapter/input/web/WalletApi.kt)
 
 An endpoint to be used by wallet when the OpenId4VP authorization request is passed to wallet by reference as a request_uri. 
-The identifier returned from calling [Initialize transaction endpoint](#initialize-transaction-endpoint) end-point should be used to identify the request.  
+The identifier in `request_uri` returned from the call to [Initialize transaction endpoint](#initialize-transaction-endpoint) end-point should be used to identify the authorization request. This identifier is called `transaction_id`, but actually, `request_id` would be a more proper name for this parameter because it corresponds to the requestId field of the [Presentation.Requested class](src/main/kotlin/eu/europa/ec/eudi/verifier/endpoint/domain/Presentation.kt:144) as implemented [here](src/main/kotlin/eu/europa/ec/eudi/verifier/endpoint/port/input/InitTransaction.kt:228). Until we clarify this, let's just keep calling it `transaction_id` in the rest of this document.
 
 **Usage:**
 ```bash
 curl https://localhost:8080/wallet/request.jwt/5N6E7VZsmwXOGLz1Xlfi96MoyZVC3FZxwdAuJ26DnGcan-vYs-VAKErioQ58BWEsKlVw2_X49jpZHyp0Mk9nKw
 ```
-**Returns:** The authorization request payload as a signed JWT. 
+**Returns:** The authorization request payload as a signed JWT.
 
 ### Get presentation definition
 
 - _Method_: GET
 - _URL_: http://localhost:8080/wallet/pd/{transactionId}
 - _Parameters_
-    - `transactionId`: The initialized transaction's identifier
+    - `transactionId`: The initialized transaction's identifier that is found in `request_uri`
 - _Actor_: [Wallet](src/main/kotlin/eu/europa/ec/eudi/verifier/endpoint/adapter/input/web/WalletApi.kt)
 
 An endpoint to be used by wallet when the presentation definition of the OpenId4VP authorization request is not embedded inline in the request but by reference as a `presentation_definition_uri`.
@@ -329,7 +329,7 @@ accept 2 type of payloads:
 _**response_mode = direct_post**_
 
 A form post (application/x-www-form-urlencoded encoding) with the following form parameters:
-- `state`: The state claim included in the authorization request JWT.
+- `state`: The state claim included in the authorization request JWT. Again, this is represented by the `transaction_id` identifier mentioned above as implemented [here](src/main/kotlin/eu/europa/ec/eudi/verifier/endpoint/port/input/PostWalletResponse.kt:197) and explained [here](src/main/kotlin/eu/europa/ec/eudi/verifier/endpoint/domain/Presentation.kt:37). Note that inline in the pointed code `state` is assigned to a variable called `request_id` of type RequestId.
 - `id_token`: The requested id_token if authorization request 'response_type' attribute contains `id_token`.
 - `vp_token`: The requested vp_token if authorization request 'response_type' attribute contains `vp_token`.
 - `presentation_submission`: The presentation submission accompanying the vp_token in case 'response_type' attribute of authorization request contains `vp_token`.
@@ -337,12 +337,12 @@ A form post (application/x-www-form-urlencoded encoding) with the following form
 _**response_mode = direct_post.jwt**_
 
 A form post (application/x-www-form-urlencoded encoding) with the following form parameters:
-- `state`: The state claim included in the authorization request JWT.
+- `state`: The state claim included in the authorization request JWT. In terms of data, the state claim corresponds to the `transaction_id`.
 - `response`: A string representing an encrypted JWT (JWE) that contains as claims the form parameters mentioned in the case above    
 
 **Usage:**
 ```bash
-STATE=IsoY9VwZXJ8GS7zg4CEHsCNu-5LpAiPGjbwYssZ2nh3tnkhytNw2mNZLSFsKOwdG2Ww33hX6PUp6P9xImdS-qA
+STATE=5N6E7VZsmwXOGLz1Xlfi96MoyZVC3FZxwdAuJ26DnGcan-vYs-VAKErioQ58BWEsKlVw2_X49jpZHyp0Mk9nKw
 curl -v -X POST 'http://localhost:8080/wallet/direct_post' \
   -H "Content-type: application/x-www-form-urlencoded" \
   -H "Accept: application/json" \
@@ -376,17 +376,19 @@ HTTP/1.1 200 OK
 HTTP/1.1 200 OK
 ```
 
+For this call to return a `redirect_uri`, it entails a `wallet_response_redirect_uri_template` to be provided in the initial call to [Initialize transaction endpoint](#initialize-transaction-endpoint). The format of this template is quite specific in form and can be sneakpeaked in [openapi.json](src/main/resources/public/openapi.json:944) and in [CreateQueryWalletResponseRedirectUri.kt](src/main/kotlin/eu/europa/ec/eudi/verifier/endpoint/port/out/cfg/CreateQueryWalletResponseRedirectUri.kt:32).
+
 ### Get wallet response
 
 - Method: GET
-- URL: http://localhost:8080/ui/presentations/{transactionId}?response_code={responseCode}
+- URL: http://localhost:8080/ui/presentations/{presentationId}?response_code={responseCode}
 - Parameters
-  - `transactionId`: The initialized transaction's identifier
+  - `presentationId`: The `presentation_id` identifier returned by the [transaction initialization](#initialize-transaction-endpoint) call.
   - `responseCode`: (OPTIONAL) Response code generated in case of 'same device' case 
 - _Actor_: [Verifier](src/main/kotlin/eu/europa/ec/eudi/verifier/endpoint/adapter/input/web/VerifierApi.kt)
 
 ```bash
-curl http://localhost:8080/ui/presentations/5N6E7VZsmwXOGLz1Xlfi96MoyZVC3FZxwdAuJ26DnGcan-vYs-VAKErioQ58BWEsKlVw2_X49jpZHyp0Mk9nKw?response_code=5272d373-ebab-40ec-b44d-0a9909d0da69
+curl http://localhost:8080/ui/presentations/STMMbidoCQTtyk9id5IcoL8CqdC8rxgks5FF8cqqUrHvw0IL3AaIHGnwxvrvcEyUJ6uUPNdoBQDa7yCqpjtKaw?response_code=5272d373-ebab-40ec-b44d-0a9909d0da69
 ```
 
 **Returns:** The wallet submitted response as JSON.
@@ -396,13 +398,13 @@ You can also try it out in [Swagger UI](http://localhost:8080/swagger-ui#/verifi
 ### Get presentation event log
 
 - Method: GET
-- URL: http://localhost:8080/ui/presentations/{transactionId}/events
+- URL: http://localhost:8080/ui/presentations/{presentationId}/events
 - Parameters
-  - `transactionId`: The initialized transaction's identifier
+  - `presentationId`: The `presentation_id` identifier returned by the [transaction initialization](#initialize-transaction-endpoint) call.
 - _Actor_: [Verifier](src/main/kotlin/eu/europa/ec/eudi/verifier/endpoint/adapter/input/web/VerifierApi.kt)
 
 ```bash
-curl http://localhost:8080/ui/presentations/5N6E7VZsmwXOGLz1Xlfi96MoyZVC3FZxwdAuJ26DnGcan-vYs-VAKErioQ58BWEsKlVw2_X49jpZHyp0Mk9nKw?response_code=5272d373-ebab-40ec-b44d-0a9909d0da69/events
+curl http://localhost:8080/ui/presentations/STMMbidoCQTtyk9id5IcoL8CqdC8rxgks5FF8cqqUrHvw0IL3AaIHGnwxvrvcEyUJ6uUPNdoBQDa7yCqpjtKaw/events
 ```
 
 **Returns:** The log of notable events for the specific presentation.

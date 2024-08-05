@@ -1,0 +1,37 @@
+{
+  "type": "vp_token",
+  "id_token_type": "subject_signed_id_token",
+  "presentation_definition": {
+        "id": "32f54163-7166-48f1-93d8-ff217bdb0653",
+        "input_descriptors": [
+            {
+                "id": "eu.europa.ec.eudiw.pid.1",
+                "name": "EUDI PID",
+                "purpose": "We need to verify your identity",
+              	"constraints": {
+                    "fields": [
+                        {
+                            "intent_to_retain": false,
+                            "path": [
+                                "$[\"eu.europa.ec.eudiw.pid.1\"][\"family_name\"]"
+                            ]
+                        }
+                    ]
+                },
+                "format": {
+                  "mso_mdoc": {
+                    "alg": [
+                      "ES256",
+                      "ES384",
+                      "ES512",
+                      "EdDSA"
+                    ]
+                  }
+                }
+            }
+        ]
+    },
+  "nonce": "nonce",
+  "response_mode": "direct_post",
+  "wallet_response_redirect_uri_template": "https://10.240.174.10/get-wallet-code?response_code={RESPONSE_CODE}"
+}
