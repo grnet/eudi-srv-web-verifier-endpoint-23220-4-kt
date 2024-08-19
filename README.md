@@ -286,13 +286,13 @@ You can also try it out in [Swagger UI](http://localhost:8080/swagger-ui#/verifi
 ### Get authorization request
 
 - _Method_: GET
-- _URL_: http://localhost:8080/wallet/request.jwt/{transactionId}
+- _URL_: http://localhost:8080/wallet/request.jwt/{requestId}
 - _Parameters_
-  - `transactionId`: The initialized transaction's identifier that is found in `request_uri`.
+  - `requestId`: The identifier of the authorization request
 - _Actor_: [Wallet](src/main/kotlin/eu/europa/ec/eudi/verifier/endpoint/adapter/input/web/WalletApi.kt)
 
-An endpoint to be used by wallet when the OpenId4VP authorization request is passed to wallet by reference as a request_uri. 
-The identifier in `request_uri` returned from the call to [Initialize transaction endpoint](#initialize-transaction-endpoint) end-point should be used to identify the authorization request. This identifier is called `transaction_id`, but actually, `request_id` would be a more proper name for this parameter because it corresponds to the requestId field of the [Presentation.Requested class](src/main/kotlin/eu/europa/ec/eudi/verifier/endpoint/domain/Presentation.kt:144) as implemented [here](src/main/kotlin/eu/europa/ec/eudi/verifier/endpoint/port/input/InitTransaction.kt:228). Until we clarify this, let's just keep calling it `transaction_id` in the rest of this document.
+An endpoint to be used by wallet when the OpenId4VP authorization request is passed to wallet by reference as a request_uri.
+In essence this is the endpoint that responds to the url included as the `request_uri` attribute of the [Initialize transaction endpoint](#initialize-transaction-endpoint)'s response.
 
 **Usage:**
 ```bash
@@ -303,9 +303,9 @@ curl https://localhost:8080/wallet/request.jwt/5N6E7VZsmwXOGLz1Xlfi96MoyZVC3FZxw
 ### Get presentation definition
 
 - _Method_: GET
-- _URL_: http://localhost:8080/wallet/pd/{transactionId}
+- _URL_: http://localhost:8080/wallet/pd/{requestId}
 - _Parameters_
-    - `transactionId`: The initialized transaction's identifier that is found in `request_uri`
+    - `requestId`: The identifier of the authorization request
 - _Actor_: [Wallet](src/main/kotlin/eu/europa/ec/eudi/verifier/endpoint/adapter/input/web/WalletApi.kt)
 
 An endpoint to be used by wallet when the presentation definition of the OpenId4VP authorization request is not embedded inline in the request but by reference as a `presentation_definition_uri`.
@@ -329,7 +329,7 @@ accept 2 type of payloads:
 _**response_mode = direct_post**_
 
 A form post (application/x-www-form-urlencoded encoding) with the following form parameters:
-- `state`: The state claim included in the authorization request JWT. Again, this is represented by the `transaction_id` identifier mentioned above as implemented [here](src/main/kotlin/eu/europa/ec/eudi/verifier/endpoint/port/input/PostWalletResponse.kt:197) and explained [here](src/main/kotlin/eu/europa/ec/eudi/verifier/endpoint/domain/Presentation.kt:37). Note that inline in the pointed code `state` is assigned to a variable called `request_id` of type RequestId.
+- `state`: The state claim included in the authorization request JWT. Its value matches the authorization request identifier.  
 - `id_token`: The requested id_token if authorization request 'response_type' attribute contains `id_token`.
 - `vp_token`: The requested vp_token if authorization request 'response_type' attribute contains `vp_token`.
 - `presentation_submission`: The presentation submission accompanying the vp_token in case 'response_type' attribute of authorization request contains `vp_token`.
@@ -337,7 +337,7 @@ A form post (application/x-www-form-urlencoded encoding) with the following form
 _**response_mode = direct_post.jwt**_
 
 A form post (application/x-www-form-urlencoded encoding) with the following form parameters:
-- `state`: The state claim included in the authorization request JWT. In terms of data, the state claim corresponds to the `transaction_id`.
+- `state`: The state claim included in the authorization request JWT. Its value matches the authorization request identifier.
 - `response`: A string representing an encrypted JWT (JWE) that contains as claims the form parameters mentioned in the case above    
 
 **Usage:**
@@ -415,7 +415,7 @@ You can also try it out in [Swagger UI](http://localhost:8080/swagger-ui#/verifi
 
 The Verifier Endpoint application can be configured using the following *environment* variables:
 
-Variable: `SPRING_WEBFLUX_BASE_PATH`  
+Variable: `SPRING_WEBFLUX_BASEPATH`  
 Description: Context path for the Verifier Endpoint application.  
 Default value: `/`
 
@@ -423,11 +423,11 @@ Variable: `SERVER_PORT`
 Description: Port for the HTTP listener of the Verifier Endpoint application  
 Default value: `8080`
 
-Variable: `VERIFIER_CLIENT_ID`  
+Variable: `VERIFIER_CLIENTID`  
 Description: Client Id of the Verifier Endpoint application  
 Default value: `Verifier`
 
-Variable: `VERIFIER_CLIENT_ID_SCHEME`  
+Variable: `VERIFIER_CLIENTIDSCHEME`  
 Description: Client Id Scheme used by the Verifier Endpoint application  
 Possible values: `pre-registered`, `x509_san_dns`, `x509_san_uri`  
 Default value: `pre-registered`
@@ -446,11 +446,11 @@ Setting this value to `GenerateRandom` will result in the generation of a random
 Note: The configured signing key must be compatible with the configured signing algorithm  
 Default value: `GenerateRandom`
 
-Variable: `VERIFIER_PUBLIC_URL`  
+Variable: `VERIFIER_PUBLICURL`  
 Description: Public URL of the Verifier Endpoint application  
 Default value: `http://localhost:${SERVER_PORT}`
 
-Variable: `VERIFIER_REQUEST_JWT_EMBED`  
+Variable: `VERIFIER_REQUESTJWT_EMBED`  
 Description: How Authorization Requests will be provided    
 Possible values: `ByValue`, `ByReference`  
 Default value: `ByReference`
@@ -460,7 +460,7 @@ Description: How the Ephemeral Keys used for Authorization Response Encryption w
 Possible values: `ByValue`, `ByReference`  
 Default value: `ByReference`
 
-Variable: `VERIFIER_PRESENTATION_DEFINITION_EMBED`  
+Variable: `VERIFIER_PRESENTATIONDEFINITION_EMBED`  
 Description: How Presentation Definitions will be provided in Authorization Requests    
 Possible values: `ByValue`, `ByReference`  
 Default value: `ByValue`
@@ -470,7 +470,7 @@ Description: How Authorization Responses are expected
 Possible values: `DirectPost`, `DirectPostJwt`  
 Default value: `DirectPostJwt`
 
-Variable: `VERIFIER_MAX_AGE`  
+Variable: `VERIFIER_MAXAGE`  
 Description: TTL of an Authorization Request  
 Notes: Provide a value using Java Duration syntax  
 Example: `PT6400M`  
@@ -482,18 +482,18 @@ Notes: Provide a value using Java Duration syntax
 Example: `P10D`  
 Default value: `P10D`
 
-Variable: `VERIFIER_CLIENT_METADATA_AUTHORIZATION_SIGNED_RESPONSE_ALG`  
+Variable: `VERIFIER_CLIENTMETADATA_AUTHORIZATIONSIGNEDRESPONSEALG`  
 Description: Accept only Authorization Responses that are _signed_ using this algorithm  
 Possible values: Any `Algorithm Name` of an IANA registered asymmetric signature algorithm (i.e. Usage is `alg`):
 https://www.iana.org/assignments/jose/jose.xhtml#web-signature-encryption-algorithms
 
-Variable: `VERIFIER_CLIENT_METADATA_AUTHORIZATION_ENCRYPTED_RESPONSE_ALG`  
+Variable: `VERIFIER_CLIENTMETADATA_AUTHORIZATIONENCRYPTEDRESPONSEALG`  
 Description: Accept only Authorization Responses that are _encrypted_ using this algorithm  
 Possible values: Any `Algorithm Name` of an IANA registered asymmetric encryption algorithm (i.e. Usage is `alg`):
 https://www.iana.org/assignments/jose/jose.xhtml#web-signature-encryption-algorithms  
 Default value: `ECDH-ES`
 
-Variable: `VERIFIER_CLIENT_METADATA_AUTHORIZATION_ENCRYPTED_RESPONSE_ENC`  
+Variable: `VERIFIER_CLIENTMETADATA_AUTHORIZATIONENCRYPTEDRESPONSEENC`  
 Description: Accept only Authorization Responses that are _encrypted_ using this method  
 Possible values: Any `Algorithm Name` of an IANA registered asymmetric encryption method (i.e. Usage is `enc`):
 https://www.iana.org/assignments/jose/jose.xhtml#web-signature-encryption-algorithms    
@@ -503,7 +503,7 @@ Variable: `CORS_ORIGINS`
 Description: Comma separated list of allowed Origins for cross-origin requests  
 Default value: `*`
 
-Variable: `CORS_ORIGIN_PATTERNS`  
+Variable: `CORS_ORIGINPATTERNS`  
 Description: Comma separated list of patterns used for more fine grained matching of allowed Origins for cross-origin requests  
 Default value: `*`
 
@@ -519,7 +519,7 @@ Variable: `CORS_CREDENTIALS`
 Description: Whether credentials (i.e. Cookies or Authorization Header) are allowed for cross-origin requests
 Default value: `false`
 
-Variable: `CORS_MAX_AGE`  
+Variable: `CORS_MAXAGE`  
 Description: Time in seconds of how long pre-flight request responses can be cached by clients  
 Default value: `3600`
 
@@ -531,7 +531,7 @@ Examples: `classpath:keystore.jks`, `file:///keystore.jks`
 
 Variable: `VERIFIER_JAR_SIGNING_KEY_KEYSTORE_TYPE`  
 Description: Type of the Keystore from which to load the Key to use for JAR signing  
-Examples: `JKS`, `P12`
+Examples: `jks`, `pkcs12`
 
 Variable: `VERIFIER_JAR_SIGNING_KEY_KEYSTORE_PASSWORD`  
 Description: Password of the Keystore from which to load the Key to use for JAR signing
