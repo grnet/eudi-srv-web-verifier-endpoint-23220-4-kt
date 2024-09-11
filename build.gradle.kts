@@ -21,12 +21,16 @@ repositories {
 }
 
 dependencies {
+    implementation("com.augustcellars.cose:cose-java:1.1.0")
+    implementation("com.soywiz.korlibs.krypto:krypto:4.0.1")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
     implementation(libs.presentation.exchange)
     implementation(libs.nimbusds.oauth2.oidc.sdk)
     implementation("org.springframework.boot:spring-boot-starter-security")
@@ -36,6 +40,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.webjars:webjars-locator-core")
     implementation(libs.swagger.ui)
+    implementation("io.ktor:ktor-client-core:2.3.12")
+    implementation("io.ktor:ktor-client-cio:2.3.12")
+    implementation("io.ktor:ktor-client-content-negotiation:2.3.12")
+    implementation(files("waltid-mdoc-credentials-jvm-1.0.0-SNAPSHOT.jar"))
 
     testImplementation(kotlin("test"))
     testImplementation(libs.kotlinx.coroutines.test)
