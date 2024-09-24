@@ -15,6 +15,7 @@ sudo ./install.sh
 
 # To execute
 
+From the root project directory execute the gradle wrapper in order to build and run the application as follows.
 ```java
 ./gradlew bootRun
 ```
