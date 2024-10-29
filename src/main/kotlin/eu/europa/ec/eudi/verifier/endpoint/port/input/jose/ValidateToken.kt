@@ -45,6 +45,7 @@ data class StatusListAgg(
     @SerialName("sub") val sub: String = "",
     @SerialName("exp") val exp: Int = 0,
     @SerialName("iat") val iat: Int = 0,
+    @SerialName("ttl") val ttl: Int = 0,
     @SerialName("status_list") val status_list: StatusList  = StatusList(),
 )
 
