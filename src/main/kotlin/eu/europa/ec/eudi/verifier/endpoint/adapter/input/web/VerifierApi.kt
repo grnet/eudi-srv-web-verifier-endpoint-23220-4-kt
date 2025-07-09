@@ -20,6 +20,7 @@ import eu.europa.ec.eudi.verifier.endpoint.domain.ResponseCode
 import eu.europa.ec.eudi.verifier.endpoint.domain.TransactionId
 import eu.europa.ec.eudi.verifier.endpoint.port.input.*
 import kotlinx.serialization.SerializationException
+import kotlinx.serialization.json.JsonPrimitive
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType.APPLICATION_JSON
@@ -74,7 +75,21 @@ internal class VerifierApi(
         return when (val result = getWalletResponse(transactionId, responseCode)) {
             is QueryResponse.NotFound -> notFound().buildAndAwait()
             is QueryResponse.InvalidState -> badRequest().buildAndAwait()
-            is QueryResponse.Found -> found(result.value)
+            is QueryResponse.Found -> {
+                val vpToken = result.value.vpToken
+                if (vpToken != null) {
+                    val vpTokenValue = vpToken[0]
+                    logger.info("vpTokenValue=${vpTokenValue}")
+                    when (vpTokenValue) {
+                        is JsonPrimitive -> {
+                            val vpTokenString = vpTokenValue.content
+                            processPresentationCredential(vpTokenString)
+                        }
+                        else -> logger.info("Ignoring vpToken")
+                    }
+                }
+                found(result.value)
+            }
         }
     }
 
