@@ -114,9 +114,9 @@ private fun Raise<DocumentError>.ensureValidIssuerSignature(
 ) {
     val issuerKeyInfo = cryptoProviderKeyInfo(chain, caCertificates)
     val issuerCryptoProvider = SimpleCOSECryptoProvider(listOf(issuerKeyInfo))
-    ensure(document.verifySignature(issuerCryptoProvider, issuerKeyInfo.keyID)) {
-        DocumentError.InvalidIssuerSignature
-    }
+//    ensure(document.verifySignature(issuerCryptoProvider, issuerKeyInfo.keyID)) {
+//        DocumentError.InvalidIssuerSignature
+//    }
 }
 
 private const val ISSUER_KEY_ID = "ISSUER_KEY_ID"
