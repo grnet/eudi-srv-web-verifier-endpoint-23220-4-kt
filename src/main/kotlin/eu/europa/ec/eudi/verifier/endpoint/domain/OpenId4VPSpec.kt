@@ -88,7 +88,7 @@ object OpenId4VPSpec {
     const val CLIENT_ID_PREFIX_X509_SAN_DNS: String = "x509_san_dns"
     const val CLIENT_ID_PREFIX_X509_HASH: String = "x509_hash"
 
-    val DEFAULT_CLIENT_ID_PREFIXES_SUPPORTED: List<String> = listOf(CLIENT_ID_PREFIX_PRE_REGISTERED)
+    val DEFAULT_CLIENT_ID_PREFIXES_SUPPORTED: List<String> = listOf(CLIENT_ID_PREFIX_PRE_REGISTERED, "Verifier")
 
     const val ENCRYPTED_RESPONSE_ENC_VALUES_SUPPORTED = "encrypted_response_enc_values_supported"
 }
