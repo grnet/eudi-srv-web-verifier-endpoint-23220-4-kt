@@ -15,6 +15,7 @@
  */
 package eu.europa.ec.eudi.verifier.endpoint.adapter.input.web
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import eu.europa.ec.eudi.verifier.endpoint.domain.ClientId
 import eu.europa.ec.eudi.verifier.endpoint.domain.OpenId4VPSpec
 import eu.europa.ec.eudi.verifier.endpoint.domain.RFC6749
@@ -23,6 +24,7 @@ import eu.europa.ec.eudi.verifier.endpoint.domain.RequestId
 import eu.europa.ec.eudi.verifier.endpoint.domain.ResponseCode
 import eu.europa.ec.eudi.verifier.endpoint.domain.TransactionId
 import eu.europa.ec.eudi.verifier.endpoint.port.input.*
+import kotlinx.coroutines.future.await
 import kotlinx.serialization.Required
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -33,6 +35,10 @@ import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.http.MediaType.IMAGE_PNG
 import org.springframework.web.reactive.function.server.*
 import org.springframework.web.reactive.function.server.ServerResponse.*
+import java.net.URI
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse
 import kotlin.jvm.optionals.getOrNull
 
 internal class VerifierApi(
@@ -113,9 +119,34 @@ internal class VerifierApi(
         return when (val result = getWalletResponse(transactionId, responseCode)) {
             is QueryResponse.NotFound -> notFound().buildAndAwait()
             is QueryResponse.InvalidState -> badRequest().buildAndAwait()
-            is QueryResponse.Found -> found(result.value)
+            is QueryResponse.Found -> {
+                sendWalletResponseToDilosi(result.value)
+                found(result.value)
+            }
+        }
+        }
+
+    private suspend fun sendWalletResponseToDilosi(response: WalletResponseTO) {
+        val httpClient = HttpClient.newHttpClient()
+        val objectMapper = jacksonObjectMapper()
+
+        val json = objectMapper.writeValueAsString(response.vpToken?.values?.first())
+
+        val request = HttpRequest.newBuilder()
+            .uri(URI.create("http://snf-74864.ok-kno.grnetcloud.net/api/eudi_present/"))
+            .header("Content-Type", "application/json")
+            .POST(HttpRequest.BodyPublishers.ofString(json))
+            .build()
+
+        val httpResponse = httpClient
+            .sendAsync(request, HttpResponse.BodyHandlers.ofString())
+            .await()
+
+        if (httpResponse.statusCode() !in 200..299) {
+            throw RuntimeException("External call failed with status ${httpResponse.statusCode()}")
         }
     }
+
 
     /**
      * Handles a request placed by verifier, input order to obtain
