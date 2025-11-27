@@ -22,7 +22,10 @@ import arrow.core.raise.either
 import arrow.core.raise.ensure
 import arrow.core.raise.ensureNotNull
 import arrow.core.toNonEmptyListOrNull
+import com.google.gson.Gson
 import com.nimbusds.jose.proc.BadJOSEException
+import com.upokecenter.cbor.CBORObject
+import com.upokecenter.cbor.CBORType
 import eu.europa.ec.eudi.verifier.endpoint.adapter.out.utils.getOrThrow
 import eu.europa.ec.eudi.verifier.endpoint.domain.*
 import eu.europa.ec.eudi.verifier.endpoint.domain.Presentation.RequestObjectRetrieved
@@ -35,10 +38,18 @@ import eu.europa.ec.eudi.verifier.endpoint.port.out.persistence.PresentationEven
 import eu.europa.ec.eudi.verifier.endpoint.port.out.persistence.PublishPresentationEvent
 import eu.europa.ec.eudi.verifier.endpoint.port.out.persistence.StorePresentation
 import eu.europa.ec.eudi.verifier.endpoint.port.out.presentation.ValidateVerifiablePresentation
+import kotlinx.coroutines.future.await
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import java.net.URI
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse
 import java.security.cert.X509Certificate
+import java.util.Base64
 
 /**
  * Represent the Authorization Response placed by wallet
@@ -219,6 +230,63 @@ class PostWalletResponseLive(
     private val validateVerifiablePresentation: ValidateVerifiablePresentation,
 ) : PostWalletResponse {
 
+    private val logger: Logger = LoggerFactory.getLogger(PostWalletResponseLive::class.java)
+
+    fun extractIssuerSignedValues(cbor: CBORObject): Map<String, Any?> {
+        val documents = cbor["documents"][0]
+        val issuerSigned = documents["issuerSigned"]
+        val namespaces = issuerSigned["nameSpaces"]
+        val pidNs = namespaces["eu.europa.ec.eudi.pid.1"]
+
+        val result = mutableMapOf<String, Any?>()
+        result["credential_type"] = namespaces.keys.first().toString()
+        for (item in pidNs.values) {
+            val inner = CBORObject.DecodeFromBytes(item.GetByteString())
+
+            val elementIdentifier = inner["elementIdentifier"].AsString()
+            val elementValueCbor = inner["elementValue"]
+
+            val elementValue: Any? = when (elementValueCbor.type) {
+                CBORType.TextString -> elementValueCbor.AsString()
+                CBORType.ByteString -> elementValueCbor.GetByteString().toString(Charsets.UTF_8)
+                CBORType.Integer -> elementValueCbor.AsInt32()
+                CBORType.Map, CBORType.Array -> elementValueCbor.ToJSONString()
+                else -> elementValueCbor.toString()
+            }
+
+            result[elementIdentifier] = elementValue
+        }
+
+        return result
+    }
+    private suspend fun sendWalletResponseToDilosi(submitted: Submitted?) {
+        val httpClient = HttpClient.newHttpClient()
+
+        val vpToken = submitted?.walletResponse?.toTO()?.vpToken?.values?.first().toString().drop(2).dropLast(2)
+        val bytes = Base64.getUrlDecoder().decode(vpToken)
+        val cbor = CBORObject.DecodeFromBytes(bytes)
+        val values = extractIssuerSignedValues(cbor)
+
+        val map = mapOf("application_id" to submitted?.id?.value, "entity" to "ΚΕΠ","profile" to values)
+
+        val gson = Gson()
+        val json = gson.toJson(map)
+        logger.info("Sending response to dilosi: $json")
+        val request = HttpRequest.newBuilder()
+            .uri(URI.create("http://snf-74864.ok-kno.grnetcloud.net/api/eudi_present/"))
+            .header("Content-Type", "application/json")
+            .POST(HttpRequest.BodyPublishers.ofString(json))
+            .build()
+
+        val httpResponse = httpClient
+            .sendAsync(request, HttpResponse.BodyHandlers.ofString())
+            .await()
+
+        if (httpResponse.statusCode() !in 200..299) {
+            throw RuntimeException("External call failed with status ${httpResponse.statusCode()}")
+        }
+    }
+
     override suspend operator fun invoke(
         requestId: RequestId,
         walletResponse: AuthorisationResponse,
@@ -226,7 +294,7 @@ class PostWalletResponseLive(
         val presentation = loadPresentation(requestId).bind()
         doInvoke(presentation, walletResponse)
             .onLeft { cause -> logFailure(presentation, cause) }
-            .onRight { (submitted, accepted) -> logWalletResponsePosted(submitted, accepted) }
+            .onRight { (submitted, accepted) -> handleWalletResponsePosted(submitted, accepted) }
             .map { (_, accepted) -> accepted }
             .bind()
     }
@@ -332,6 +400,13 @@ class PostWalletResponseLive(
         presentation.submit(clock, walletResponse, responseCode).getOrThrow()
     }
 
+    private suspend fun handleWalletResponsePosted(submitted: Submitted, accepted: WalletResponseAcceptedTO?) {
+        try {
+            sendWalletResponseToDilosi(submitted)
+        } catch (e: Exception) {}
+
+        logWalletResponsePosted(submitted, accepted)
+    }
     private suspend fun logWalletResponsePosted(p: Submitted, accepted: WalletResponseAcceptedTO?) {
         val event =
             PresentationEvent.WalletResponsePosted(p.id, p.submittedAt, p.walletResponse.toTO(), accepted)

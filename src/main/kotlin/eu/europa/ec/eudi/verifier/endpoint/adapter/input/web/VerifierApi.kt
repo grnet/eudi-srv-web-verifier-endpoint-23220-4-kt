@@ -119,34 +119,9 @@ internal class VerifierApi(
         return when (val result = getWalletResponse(transactionId, responseCode)) {
             is QueryResponse.NotFound -> notFound().buildAndAwait()
             is QueryResponse.InvalidState -> badRequest().buildAndAwait()
-            is QueryResponse.Found -> {
-                sendWalletResponseToDilosi(result.value)
-                found(result.value)
-            }
+            is QueryResponse.Found -> found(result.value)
         }
         }
-
-    private suspend fun sendWalletResponseToDilosi(response: WalletResponseTO) {
-        val httpClient = HttpClient.newHttpClient()
-        val objectMapper = jacksonObjectMapper()
-
-        val json = objectMapper.writeValueAsString(response.vpToken?.values?.first())
-
-        val request = HttpRequest.newBuilder()
-            .uri(URI.create("http://snf-74864.ok-kno.grnetcloud.net/api/eudi_present/"))
-            .header("Content-Type", "application/json")
-            .POST(HttpRequest.BodyPublishers.ofString(json))
-            .build()
-
-        val httpResponse = httpClient
-            .sendAsync(request, HttpResponse.BodyHandlers.ofString())
-            .await()
-
-        if (httpResponse.statusCode() !in 200..299) {
-            throw RuntimeException("External call failed with status ${httpResponse.statusCode()}")
-        }
-    }
-
 
     /**
      * Handles a request placed by verifier, input order to obtain
